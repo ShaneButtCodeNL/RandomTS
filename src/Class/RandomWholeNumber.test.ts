@@ -105,4 +105,17 @@ describe("\n03 Range functions. Each will call 1000 calls to next", () => {
       expect(v).not.toBeGreaterThanOrEqual(200);
     }
   });
+  it("06 Change Max Value to be less than min should do nothing", () => {
+    const RNG = new RandomWholeNumber(12345467, 12345, 123, 5000, 1000, 900);
+    RNG.setMax(900);
+    for (let i = 0; i < 1000; i++) {
+      const v = RNG.next();
+      expect(v).not.toBeLessThan(900);
+    }
+    RNG.setMax(500);
+    for (let i = 0; i < 1000; i++) {
+      const v = RNG.next();
+      expect(v).not.toBeLessThan(900);
+    }
+  });
 });
