@@ -42,7 +42,7 @@ export default class RandomProbability {
    * Changes the precision of the generated values.
    * @param newPrecision
    */
-  public setPercision(newPrecision: Number) {
+  public setPrecision(newPrecision: Number) {
     if (newPrecision) {
       this.precision = newPrecision;
     }

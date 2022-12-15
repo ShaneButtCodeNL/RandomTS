@@ -58,7 +58,7 @@ describe("\n02 Generate values", () => {
   it("05 precision levels should format output correctly", () => {
     const rng = new RandomProbability(1234567, 274645);
     for (let i = 1; i < 7; i++) {
-      rng.setPercision(i);
+      rng.setPrecision(i);
       for (let j = 0; j < 100; j++) {
         const v = rng.next();
         expect(v).toBeGreaterThanOrEqual(0);
