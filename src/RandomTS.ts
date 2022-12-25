@@ -134,7 +134,7 @@ export const randomNumberInRange = (
  * @param replace Will values be replaced after being drawn. Defaults to false.
  * @returns An array of values.
  */
-export const nRandomNumberInRange = (
+export const nRandomNumbersInRange = (
   lowerLimit: number,
   upperLimit: number,
   n: number,

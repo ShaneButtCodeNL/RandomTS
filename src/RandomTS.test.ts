@@ -39,7 +39,7 @@ describe("03 Range Functions", () => {
     }
   });
   it("02 nRandomNumberInRange should return an array of values in range", () => {
-    const range = rand.nRandomNumberInRange(0, 10_000, 100);
+    const range = rand.nRandomNumbersInRange(0, 10_000, 100);
     expect(Array.isArray(range)).toBe(true);
     expect(range.length).toBe(100);
     for (let i of range) {
@@ -49,7 +49,7 @@ describe("03 Range Functions", () => {
     }
   });
   it("03 nRandomNumberInRange with no replaces should have all unique values", () => {
-    const range = rand.nRandomNumberInRange(0, 100, 100, false);
+    const range = rand.nRandomNumbersInRange(0, 100, 100, false);
     expect(range.length).toBe(100);
     expect(new Set(range).size).toBe(100);
   });
