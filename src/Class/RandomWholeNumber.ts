@@ -1,13 +1,14 @@
 //Uses simple Psudo random number generation to generate whole numbers
+
 export default class RandomWholeNumber {
   //The min and max values for numbers. range [min,max)
-  private max: Number;
-  private min: Number | null;
-  private multiplier: Number;
-  private incrementor: Number;
-  private modulus: Number;
-  private seedCurrentValue: Number;
-  private seedInitialValue: Number;
+  private max: number;
+  private min: number | null;
+  private multiplier: number;
+  private incrementor: number;
+  private modulus: number;
+  private seedCurrentValue: number;
+  private seedInitialValue: number;
 
   /**
    * Creates a Random Number Generator(RNG)
@@ -19,16 +20,16 @@ export default class RandomWholeNumber {
    * @param min The floor that is the lowest value that can be generated
    */
   public constructor(
-    seed?: Number,
-    multiplier?: Number,
-    incrementor?: Number,
-    modulus?: Number,
-    max?: Number,
-    min?: Number
+    seed?: number,
+    multiplier?: number,
+    incrementor?: number,
+    modulus?: number,
+    max?: number,
+    min?: number
   ) {
-    this.seedCurrentValue = seed ? seed : Date.now() * (1 / 9);
-    this.multiplier = multiplier ? multiplier : 1_234_567;
-    this.incrementor = incrementor ? incrementor : 123_456;
+    this.seedCurrentValue = seed ? seed : Date.now() % 7_654_321;
+    this.multiplier = multiplier ? multiplier : 1_196_089;
+    this.incrementor = incrementor ? incrementor : 2_315_569;
     this.modulus = modulus ? modulus : 7_654_321;
     this.max = max ? max : this.modulus;
     if (this.max >= this.modulus) this.modulus = +this.max + 1;
@@ -44,7 +45,7 @@ export default class RandomWholeNumber {
    * Defines the ceiling for RNG that values must be strictly less then
    * @param newMaxValue The desired max value
    */
-  public setMax(newMaxValue: Number) {
+  public setMax(newMaxValue: number) {
     if (!this.min) {
       this.min = 0;
     }
@@ -60,7 +61,7 @@ export default class RandomWholeNumber {
    * Defines the floor for lowest posible number to be generated
    * @param newMinValue The desired floor
    */
-  public setMin(newMinValue: Number) {
+  public setMin(newMinValue: number) {
     if (newMinValue < this.max) {
       this.min = newMinValue;
     }
@@ -71,11 +72,17 @@ export default class RandomWholeNumber {
    * @param newMinValue The desired min
    * @param newMaxValue The desired max
    */
-  public setMinMax(newMinValue: Number, newMaxValue: Number) {
+  public setMinMax(newMinValue: number, newMaxValue: number) {
     if (newMaxValue > newMinValue) {
       this.min = newMinValue;
       this.max = newMaxValue;
-      if (this.modulus <= newMaxValue) this.modulus = +newMaxValue + 1;
+      const newMod = Math.abs(+newMaxValue - +newMinValue);
+      if (newMod <= 1)
+        throw new Error("Modulus cannot be less than or equal to 1");
+      this.modulus = newMod;
+      this.incrementor = Math.floor(newMod * (2 / 5));
+      this.multiplier = Math.floor(1 + newMod * (7 / 9));
+      this.seedCurrentValue = this.seedCurrentValue % newMod;
     }
   }
 

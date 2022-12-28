@@ -6,7 +6,7 @@ import RandomProbability from "./Class/RandomProbabilty";
  * @param precision The max number of decimal places
  * @returns a number in range [0,1]
  */
-export const random = (precision?: number): number => {
+export const random = (precision?: number, seed?: number): number => {
   const rng = new RandomProbability();
   if (precision) rng.setPrecision(precision);
   return +rng.next();
@@ -16,17 +16,18 @@ export const random = (precision?: number): number => {
  * Simulates a coin flip
  * @returns "H" if heads, "T" if tails
  */
-export const flipACoin = (): string => {
-  const rng = new RandomWholeNumber();
-  rng.setMinMax(0, 2);
-  return rng.next() ? "H" : "T";
+export const flipACoin = (seed?: number): string => {
+  const rng = seed
+    ? new RandomProbability(123, 321)
+    : new RandomProbability(seed);
+  return Math.floor(rng.next() * 2) ? "H" : "T";
 };
 
 /**
  * Simulates rolling a six sided die
  * @returns a value between [1,6]
  */
-export const rollASixSidedDie = (): number => {
+export const rollASixSidedDie = (seed?: number): number => {
   const rng = new RandomWholeNumber();
   rng.setMinMax(1, 7);
   return +rng.next();
@@ -37,7 +38,7 @@ export const rollASixSidedDie = (): number => {
  * @param n The number of sides on the die
  * @returns a value between [1,n]
  */
-export const rollNSidedDie = (n: number): number => {
+export const rollNSidedDie = (n: number, seed?: number): number => {
   const rng = new RandomWholeNumber();
   rng.setMinMax(1, n + 1);
   return +rng.next();
@@ -48,7 +49,7 @@ export const rollNSidedDie = (n: number): number => {
  * @param array An array of values
  * @returns The array but the values have been shuffled
  */
-export const shuffleArray = (array: Array<any>): Array<any> => {
+export const shuffleArray = (array: Array<any>, seed?: number): Array<any> => {
   const rng = new RandomProbability();
   const shuffledArray = array
     .map((v) => [v, rng.next()])
@@ -61,7 +62,7 @@ export const shuffleArray = (array: Array<any>): Array<any> => {
  * Rearanges the values of an array and alters the original array
  * @param array an array of values
  */
-export const shuffleArrayInPlace = (array: Array<any>): void => {
+export const shuffleArrayInPlace = (array: Array<any>, seed?: number): void => {
   const shuffledArray = shuffleArray(array);
   for (let i = 0; i < array.length; i++) array[i] = shuffledArray[i];
 };
@@ -71,7 +72,7 @@ export const shuffleArrayInPlace = (array: Array<any>): void => {
  * @param array The array of values
  * @returns The random selected value
  */
-export const pickRandomFromArray = (array: Array<any>): any => {
+export const pickRandomFromArray = (array: Array<any>, seed?: number): any => {
   const rng = new RandomWholeNumber();
   rng.setMax(array.length);
   return array[+rng.next()];
@@ -87,7 +88,8 @@ export const pickRandomFromArray = (array: Array<any>): any => {
 export const pickNRandomFromArray = (
   array: Array<any>,
   n: number,
-  replace = false
+  replace = false,
+  seed?: number
 ): Array<any> => {
   if (n <= 0 || (!replace && n > array.length))
     throw new Error(
@@ -115,13 +117,14 @@ export const pickNRandomFromArray = (
  */
 export const randomNumberInRange = (
   lowerLimit: number,
-  upperLimit: number
+  upperLimit: number,
+  seed?: number
 ): number => {
   if (lowerLimit >= upperLimit)
     throw new Error(
       `Error: lowerLimit must be lower than upperLimit.\n\tlowerLimit : ${lowerLimit}\n\tupperLimit : ${upperLimit}`
     );
-  const rng = new RandomWholeNumber();
+  const rng = seed ? new RandomWholeNumber() : new RandomWholeNumber(seed);
   rng.setMinMax(lowerLimit, upperLimit);
   return +rng.next();
 };
@@ -138,7 +141,8 @@ export const nRandomNumbersInRange = (
   lowerLimit: number,
   upperLimit: number,
   n: number,
-  replace = false
+  replace = false,
+  seed?: number
 ): Array<number> => {
   //If lower limit is greater than upperLimit throw error
   if (lowerLimit >= upperLimit)

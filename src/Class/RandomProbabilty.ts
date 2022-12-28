@@ -4,7 +4,7 @@ import RandomWholeNumber from "./RandomWholeNumber";
 export default class RandomProbability {
   private randomA: RandomWholeNumber;
   private randomB: RandomWholeNumber;
-  private precision: Number | null;
+  private precision: number | null;
 
   /**
    * Creates a Random Probability Generator(RPG)
@@ -27,7 +27,7 @@ export default class RandomProbability {
    * @param offset The offset
    * @returns A value in [0,1)
    */
-  public next(offset?: number): Number {
+  public next(offset?: number): number {
     let randA = this.randomA.next(offset);
     let randB = this.randomB.next(offset);
     if (this.precision) {
@@ -42,7 +42,7 @@ export default class RandomProbability {
    * Changes the precision of the generated values.
    * @param newPrecision
    */
-  public setPrecision(newPrecision: Number) {
+  public setPrecision(newPrecision: number) {
     if (newPrecision) {
       this.precision = newPrecision;
     }
