@@ -1,6 +1,6 @@
 {
   "name": "@shane-butt/randomts",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Random numbers for all your random needs.",
   "main": "lib/RandomTS.js",
   "types": "lib/RandomTS.d.ts",

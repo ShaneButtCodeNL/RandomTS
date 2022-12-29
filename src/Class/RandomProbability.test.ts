@@ -26,7 +26,7 @@ describe("\n02 Generate values", () => {
   it("01 no seed generates values in range [0,1)", () => {
     const rng = new RandomProbability();
     for (let i = 0; i < 1000; i++) {
-      const v = rng.next();
+      const v = parseFloat(rng.next());
       expect(v).toBeLessThanOrEqual(1);
       expect(v).toBeGreaterThanOrEqual(0);
     }
@@ -34,7 +34,7 @@ describe("\n02 Generate values", () => {
   it("02 no seed generates values in range [0,1) when using offset", () => {
     const rng = new RandomProbability();
     for (let i = 0; i < 1000; i++) {
-      const v = rng.next(i * 123 + 23491);
+      const v = parseFloat(rng.next(i * 123 + 23491));
       expect(v).toBeLessThanOrEqual(1);
       expect(v).toBeGreaterThanOrEqual(0);
     }
@@ -42,7 +42,7 @@ describe("\n02 Generate values", () => {
   it("03 2 seed generates values in range [0,1)", () => {
     const rng = new RandomProbability(1234567, 274645);
     for (let i = 0; i < 1000; i++) {
-      const v = rng.next();
+      const v = parseFloat(rng.next());
       expect(v).toBeLessThanOrEqual(1);
       expect(v).toBeGreaterThanOrEqual(0);
     }
@@ -50,7 +50,7 @@ describe("\n02 Generate values", () => {
   it("04 2 seed generates values in range [0,1) when using offset", () => {
     const rng = new RandomProbability(1234567, 274645);
     for (let i = 0; i < 1000; i++) {
-      const v = rng.next(i * 123 + 23491);
+      const v = parseFloat(rng.next(i * 123 + 23491));
       expect(v).toBeLessThanOrEqual(1);
       expect(v).toBeGreaterThanOrEqual(0);
     }
@@ -60,12 +60,28 @@ describe("\n02 Generate values", () => {
     for (let i = 1; i < 7; i++) {
       rng.setPrecision(i);
       for (let j = 0; j < 100; j++) {
-        const v = rng.next();
+        const v = parseFloat(rng.next());
         expect(v).toBeGreaterThanOrEqual(0);
         expect(v).toBeLessThanOrEqual(1);
         //3+i as 2 precision will be [0.00 , 0.99)
         expect(v.toString().length).toBeLessThan(3 + i);
       }
+    }
+  });
+  it("06 precision less than or equal to zero should throw error", () => {
+    const rng = new RandomProbability();
+    expect(() => rng.setPrecision(0)).toThrow();
+    expect(() => rng.setPrecision(-100)).toThrow();
+  });
+  it("07 nextValue() should generate a number not a string", () => {
+    const rng = new RandomProbability();
+    const p = 3;
+    rng.setPrecision(p);
+    for (let i = 0; i < 100; i++) {
+      const v = rng.nextValue();
+      expect(typeof v).toBe("number");
+      expect(v).toBeGreaterThanOrEqual(0);
+      expect(v).toBeLessThan(1);
     }
   });
 });

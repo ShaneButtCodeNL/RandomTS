@@ -87,7 +87,8 @@ export class XORShift32Bit {
     this.shift2 = shift2;
     this.shift3 = shift3;
   }
-  public next() {
+  public next(offset = 0) {
+    this.seed += offset;
     this.seed ^= this.seed << this.shift1;
     this.seed ^= this.seed >> this.shift2;
     this.seed ^= this.seed << this.shift3;
@@ -180,6 +181,7 @@ export class XORShift32Bit {
     [17, 15, 26],
   ];
 }
+
 export const makeRtlUniform = (seed?: number) => {
   return new LCG(
     seed || Date.now(),

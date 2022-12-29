@@ -1,10 +1,10 @@
 import RandomWholeNumber from "./RandomWholeNumber";
-
+const mask16Bit = 2 ** 16 - 1;
 //Generates a randomnumber between [0,1]
 export default class RandomProbability {
   private randomA: RandomWholeNumber;
   private randomB: RandomWholeNumber;
-  private precision: number | null;
+  private precision: number;
 
   /**
    * Creates a Random Probability Generator(RPG)
@@ -12,39 +12,49 @@ export default class RandomProbability {
    * @param seedB A different seed
    * @param precision The precision of the generated value
    */
-  constructor(seedA?: number, seedB?: number, precision?: number) {
-    this.precision = precision ? precision : null;
+  constructor(seedA?: number, seedB?: number, precision = 1) {
+    this.precision = precision;
     this.randomA = seedA
       ? new RandomWholeNumber(seedA)
-      : new RandomWholeNumber(Date.now() % 1234567);
+      : new RandomWholeNumber((Date.now() >> 2) & mask16Bit);
     this.randomB = seedB
       ? new RandomWholeNumber(seedB)
-      : new RandomWholeNumber(Date.now() % 2345678);
+      : new RandomWholeNumber((Date.now() >> 3) ^ mask16Bit);
   }
 
   /**
-   * Generates a value between [0,1) from the PNG. Can be Given an offset value to alter the value.
+   * Generates a string value between [0,1) from the PNG. Can be Given an offset value to alter the value.
    * @param offset The offset
-   * @returns A value in [0,1)
+   * @returns A string value in [0,1)
    */
-  public next(offset?: number): number {
+  public next(offset = 0): string {
+    //Add one to prevent divide by zero error
     let randA = this.randomA.next(offset);
     let randB = this.randomB.next(offset);
-    if (this.precision) {
-      return randA > randB
-        ? +(+randB / +randA).toFixed(+this.precision)
-        : +(+randA / +randB).toFixed(+this.precision);
-    }
-    return randA > randB ? +randB / +randA : +randA / +randB;
+    return randA > randB
+      ? (randB / (randA + 1)).toFixed(this.precision)
+      : (randA / (randB + 1)).toFixed(this.precision);
   }
 
   /**
-   * Changes the precision of the generated values.
+   * Generates a number value in the range of [0,1). Can be given an offset to alter the value.
+   * @param offset The offset
+   * @returns A number value between [0,1)
+   */
+  public nextValue(offset = 0) {
+    return parseFloat(this.next(offset));
+  }
+
+  /**
+   * Changes the precision of the generated values. Precision must be greater than 0.
    * @param newPrecision
    */
   public setPrecision(newPrecision: number) {
-    if (newPrecision) {
-      this.precision = newPrecision;
-    }
+    if (newPrecision <= 0)
+      throw new Error(
+        `ERROR\n"newPrecision must be larger than 0. Got [ ${newPrecision} ]`
+      );
+
+    this.precision = newPrecision;
   }
 }

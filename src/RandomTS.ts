@@ -1,6 +1,10 @@
 import RandomWholeNumber from "./Class/RandomWholeNumber";
 import RandomProbability from "./Class/RandomProbabilty";
 
+const mask16Bit = 2 ** 16 - 1;
+const masterSeed = Date.now() & mask16Bit;
+const masterWholeNumberGenerator = new RandomWholeNumber(masterSeed);
+
 /**
  * Gets a random number between [0,1]
  * @param precision The max number of decimal places
@@ -17,10 +21,18 @@ export const random = (precision?: number, seed?: number): number => {
  * @returns "H" if heads, "T" if tails
  */
 export const flipACoin = (seed?: number): string => {
-  const rng = seed
-    ? new RandomProbability(123, 321)
-    : new RandomProbability(seed);
-  return Math.floor(rng.next() * 2) ? "H" : "T";
+  // const rng = seed
+  //   ? new RandomWholeNumber(seed)
+  //   : new RandomWholeNumber(masterSeed);
+  const flip = (
+    seed
+      ? new RandomWholeNumber(seed).nextInRange(0, 2)
+      : masterWholeNumberGenerator.nextInRange(0, 2)
+  )
+    ? "H"
+    : "T";
+
+  return flip;
 };
 
 /**
@@ -28,9 +40,9 @@ export const flipACoin = (seed?: number): string => {
  * @returns a value between [1,6]
  */
 export const rollASixSidedDie = (seed?: number): number => {
-  const rng = new RandomWholeNumber();
-  rng.setMinMax(1, 7);
-  return +rng.next();
+  return seed
+    ? new RandomWholeNumber(seed).nextInRange(1, 7)
+    : masterWholeNumberGenerator.nextInRange(1, 7);
 };
 
 /**
