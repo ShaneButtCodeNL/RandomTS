@@ -1,6 +1,8 @@
 import RandomWholeNumber from "./Class/RandomWholeNumber";
 import RandomProbability from "./Class/RandomProbabilty";
 
+const DEFAULTPRECISION = 3;
+
 const mask16Bit = 2 ** 16 - 1;
 const masterSeed = Date.now() & mask16Bit;
 const masterSeed2 = (Date.now() >> 2) & mask16Bit;
@@ -8,18 +10,26 @@ const masterWholeNumberGenerator = new RandomWholeNumber(masterSeed);
 const masterRandomProbabilityGenerator = new RandomProbability(
   masterSeed,
   masterSeed2,
-  3
+  DEFAULTPRECISION
 );
+
+//Export RNGs
+export { RandomProbability, RandomWholeNumber };
 
 /**
  * Gets a random number between [0,1]
  * @param precision The max number of decimal places
  * @returns a number in range [0,1]
  */
-export const random = (precision?: number, seed?: number): number => {
-  const rng = new RandomProbability();
-  if (precision) rng.setPrecision(precision);
-  return +rng.next();
+export const random = (
+  precision?: number,
+  seedA?: number,
+  seedB?: number
+): number => {
+  const rng = seedA
+    ? new RandomProbability(seedA, seedB || masterSeed2)
+    : masterRandomProbabilityGenerator;
+  return rng.nextValuePrecision(precision || DEFAULTPRECISION);
 };
 
 /**
@@ -54,9 +64,9 @@ export const rollASixSidedDie = (seed?: number): number => {
  * @returns a value between [1,n]
  */
 export const rollNSidedDie = (n: number, seed?: number): number => {
-  const rng = new RandomWholeNumber();
-  rng.setMinMax(1, n + 1);
-  return +rng.next();
+  return seed
+    ? new RandomWholeNumber(seed).nextInRange(1, n + 1)
+    : masterWholeNumberGenerator.nextInRange(1, n + 1);
 };
 
 /**
@@ -64,10 +74,16 @@ export const rollNSidedDie = (n: number, seed?: number): number => {
  * @param array An array of values
  * @returns The array but the values have been shuffled
  */
-export const shuffleArray = (array: Array<any>, seed?: number): Array<any> => {
-  const rng = new RandomProbability();
+export const shuffleArray = (
+  array: Array<any>,
+  seedA?: number,
+  seedB?: number
+): Array<any> => {
+  const rng = seedA
+    ? new RandomProbability(seedA, seedB || masterSeed2)
+    : masterRandomProbabilityGenerator;
   const shuffledArray = array
-    .map((v) => [v, rng.next()])
+    .map((v) => [v, rng.nextValue()])
     .sort((a, b) => a[1] - b[1])
     .map((v) => v[0]);
   return shuffledArray;
@@ -76,6 +92,7 @@ export const shuffleArray = (array: Array<any>, seed?: number): Array<any> => {
 /**
  * Rearanges the values of an array and alters the original array
  * @param array an array of values
+ * @deprecated Please use [shuffleArray] to not mutate the original array.
  */
 export const shuffleArrayInPlace = (array: Array<any>, seed?: number): void => {
   const shuffledArray = shuffleArray(array);
@@ -88,9 +105,8 @@ export const shuffleArrayInPlace = (array: Array<any>, seed?: number): void => {
  * @returns The random selected value
  */
 export const pickRandomFromArray = (array: Array<any>, seed?: number): any => {
-  const rng = new RandomWholeNumber();
-  rng.setMax(array.length);
-  return array[+rng.next()];
+  const rng = seed ? new RandomWholeNumber(seed) : masterWholeNumberGenerator;
+  return array[rng.nextInRange(0, array.length)];
 };
 
 /**
@@ -112,13 +128,13 @@ export const pickNRandomFromArray = (
     );
   const returnArray: Array<any> = [];
   const copyArray = [...array];
-  const rng = new RandomWholeNumber();
-  rng.setMax(array.length);
+  const rng = seed ? new RandomWholeNumber(seed) : masterWholeNumberGenerator;
   let getArrayValue = replace
-    ? () => returnArray.push(copyArray[+rng.next()])
+    ? () => returnArray.push(copyArray[rng.nextInRange(0, copyArray.length)])
     : () => {
-        returnArray.push(copyArray.splice(+rng.next(), 1)[0]);
-        rng.setMax(copyArray.length);
+        returnArray.push(
+          copyArray.splice(rng.nextInRange(0, copyArray.length), 1)[0]
+        );
       };
   for (let i = 0; i < n; i++) getArrayValue();
   return returnArray;
@@ -139,9 +155,8 @@ export const randomNumberInRange = (
     throw new Error(
       `Error: lowerLimit must be lower than upperLimit.\n\tlowerLimit : ${lowerLimit}\n\tupperLimit : ${upperLimit}`
     );
-  const rng = seed ? new RandomWholeNumber() : new RandomWholeNumber(seed);
-  rng.setMinMax(lowerLimit, upperLimit);
-  return +rng.next();
+  const rng = seed ? new RandomWholeNumber(seed) : masterWholeNumberGenerator;
+  return rng.nextInRange(lowerLimit, upperLimit);
 };
 
 /**
@@ -173,13 +188,13 @@ export const nRandomNumbersInRange = (
     );
 
   const returnArray: Array<number> = [];
-  const rng = new RandomWholeNumber();
-  rng.setMinMax(lowerLimit, upperLimit);
+  const rng = seed ? new RandomWholeNumber(seed) : masterWholeNumberGenerator;
   if (!replace) {
     //An array of range
     const array = Array.from({ length: length }, (_, i) => lowerLimit + i);
     return shuffleArray(array).slice(0, n);
   }
-  for (let i = 0; i < n; i++) returnArray.push(+rng.next());
+  for (let i = 0; i < n; i++)
+    returnArray.push(rng.nextInRange(lowerLimit, upperLimit));
   return returnArray;
 };

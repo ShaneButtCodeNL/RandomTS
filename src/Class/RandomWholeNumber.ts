@@ -29,6 +29,7 @@ export default class RandomWholeNumber {
   /**
    * Defines the ceiling for RNG that values must be strictly less then
    * @param newMaxValue The desired max value
+   * @deprecated As 1.1.1. Please use [nextInRange] to get values in a range.
    */
   public setMax(newMaxValue: number) {
     if (newMaxValue <= this.min)
@@ -41,6 +42,7 @@ export default class RandomWholeNumber {
   /**
    * Defines the floor for lowest posible number to be generated
    * @param newMinValue The desired floor
+   * @deprecated As 1.1.1. Please use [nextInRange] to get values in a range.
    */
   public setMin(newMinValue: number) {
     if (newMinValue >= this.max)
@@ -54,6 +56,7 @@ export default class RandomWholeNumber {
    * Updates the range for RNG. Sets range as [min, max)
    * @param newMinValue The desired min
    * @param newMaxValue The desired max
+   * @deprecated As 1.1.1. Please use [nextInRange] to get values in a range.
    */
   public setMinMax(newMinValue: number, newMaxValue: number) {
     if (newMaxValue <= newMinValue)
@@ -76,6 +79,13 @@ export default class RandomWholeNumber {
     );
   }
 
+  /**
+   * Generates the next value from the RNG in a specifc range [min,max).
+   * @param min The lower value. All Values will be greater or equal to this.
+   * @param max The upper bound. All values will be strictly less than this.
+   * @param offset The offset
+   * @returns A value in range [min,max)
+   */
   public nextInRange(min: number, max: number, offset = 0) {
     if (min >= max)
       throw new Error(
