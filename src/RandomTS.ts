@@ -3,7 +3,13 @@ import RandomProbability from "./Class/RandomProbabilty";
 
 const mask16Bit = 2 ** 16 - 1;
 const masterSeed = Date.now() & mask16Bit;
+const masterSeed2 = (Date.now() >> 2) & mask16Bit;
 const masterWholeNumberGenerator = new RandomWholeNumber(masterSeed);
+const masterRandomProbabilityGenerator = new RandomProbability(
+  masterSeed,
+  masterSeed2,
+  3
+);
 
 /**
  * Gets a random number between [0,1]
@@ -21,9 +27,6 @@ export const random = (precision?: number, seed?: number): number => {
  * @returns "H" if heads, "T" if tails
  */
 export const flipACoin = (seed?: number): string => {
-  // const rng = seed
-  //   ? new RandomWholeNumber(seed)
-  //   : new RandomWholeNumber(masterSeed);
   const flip = (
     seed
       ? new RandomWholeNumber(seed).nextInRange(0, 2)
