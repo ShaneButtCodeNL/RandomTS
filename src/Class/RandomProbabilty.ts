@@ -103,4 +103,12 @@ export default class RandomProbability {
 
     this.precision = newPrecision;
   }
+
+  /**
+   * Resets the Random number generators to initial state.
+   */
+  public reset() {
+    this.randomA.reset();
+    this.randomB.reset();
+  }
 }

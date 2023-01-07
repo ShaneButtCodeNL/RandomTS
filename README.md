@@ -278,15 +278,16 @@ const values4 = random.nRandomNumbersInRange(-10,10,100,true)
 
 #### `RandomWholeNumber`
 
-> Import To project
+Import To project
 
 ```
 import {RandomWholeNumber} from "@shane-butt/randomts"
 ```
 
-> Constructor
+Constructor
+
+> `RandomWholeNumber( seed?:number, max=100, min=0 )`
 >
-> - `RandomWholeNumber( seed?:number, max=100, min=0 )`
 > - `seed` [ number ] A number that is used to base the random values are generated from. If undefined it will generate its own seed.
 > - `max` [ number ] A number that makes an upper bound for number generation. All Values generated will be strictly less then max. Defaults to 100.
 > - `min` [ number ] A number that makes a floor for number generation. All Values will be greater than or equal to min. Defaults to 0.
@@ -303,9 +304,10 @@ const rng3 = new RandomWholeNumber(123_456_789,30,99)
 
 ```
 
-> Generate values
+Generate values
+
+> `next( offset=0 )` Will generate a value in the range of the generator's min and max values.
 >
-> - `next( offset=0 )` Will generate a value in the range of the generator's min and max values.
 > - `offset` [ number ] A value to offset the next generated value without affecting future random generations.
 
 ```
@@ -317,7 +319,8 @@ const rng = new RandomWholeNumber()
 const randomValue= rng.next();
 ```
 
-> - `nextInRange( min:number, max:number, offset=0 )` Will generate a value in the range [ min,max ]
+> `nextInRange( min:number, max:number, offset=0 )` Will generate a value in the range [ min,max ]
+>
 > - `min` The floor for generation. Value generated will be greater than or equal to min.
 > - `max` The upper bound for number generation. Value generated will be strictly less then max.
 > - This function ignores the bound the of the generator allowing generation of different values without affecting future generations.
@@ -332,19 +335,37 @@ const rng = new RandomWholeNumber()
 const randomValue= rng.nextInRange(123,321);
 ```
 
+> `reset()` Will reset the the Generator to initial state.
+
+```
+import {RandomWholeNumber} from "@shane-butt/randomts"
+
+const rng = new RandomWholeNumber()
+
+const a = rng.next()
+
+rng.reset()
+
+const b = rng.next()
+
+//True
+a===b
+```
+
 ---
 
 #### `Randomprobability`
 
-> Import To project
+Import To project
 
 ```
 import {RandomProbability} from "@shane-butt/randomts"
 ```
 
-> Constructor
+Constructor
+
+> `RandomProbability(seedA?: number, seedB?: number, precision = 2)`
 >
-> - `RandomProbability(seedA?: number, seedB?: number, precision = 2)`
 > - `seedA` [ number ] a Seed used to generate numbers.
 > - `seedB` [ number ] a Seed used to generate numbers.
 > - `precision` [ number ] The precision of the number. This states the number of decimal places to use. Must be greater than zero. Defaults value to 2.
@@ -361,4 +382,117 @@ const rng3 = new RandomProbability(123, 456)
 const rng4 = new RandomProbability(123, 456, 5)
 ```
 
+Generate Values
+
+> `next(offset=0)` Generates a value in range [ 0 , 1 )
 >
+> - `offset` A number that can be given to offset this generated value. Defaults to zero if undefined
+> - Returns a string representation of a number in the range [ 0 , 1 ).
+> - Value will have `precision` number of decimal points. EX `precision=2` then `value=0.AB` where `A` and `B` are numbers.
+
+```
+import {RandomProbability} from "@shane-butt/randomts"
+
+const rng = new RandomProbability()
+
+const a= rng.next()
+
+//True
+typeof a === "string"
+
+const numA = parseFloat(a)
+
+//True
+numA >= 0
+//True
+numA < 1
+```
+
+> `nextValue(offset=0)`
+>
+> - `offset` A number that can be given to offset this generated value. Defaults to zero if undefined.
+> - Returns a number in the range of [ 0 , 1 ).
+> - This is the same as calling `next` but calls parse float on the value automatically.
+> - Value will have `precision` number of decimal points. EX `precision=2` then `value=0.AB` where `A` and `B` are numbers.
+> - Since this is a number the number of decimal places may be less than `precision` as trailing zeros are ignored.
+
+```
+import {RandomProbability} from "@shane-butt/randomts"
+
+const rng = new RandomProbability()
+
+const a = rng.nextValue(100)
+
+//True
+typeof a === "number"
+
+//True
+a >= 0
+//True
+a < 1
+//True
+a !== 1
+```
+
+> `nextPrecision(precision:number,offset=0) : string`
+>
+> - `precision` The precision (number of decimals places) of the next generated value.
+> - `offset` A number that can be given to offset this generated value. Defaults to zero if undefined
+> - Returns a String representation of a number in range of [ 0 ,1 ). Will have a length of 2 + `precision`. EX 0.ABC
+
+```
+import {RandomProbability} from "@shane-butt/randomts"
+
+const rng = new RandomProbability()
+
+// a is like "0.ABCDE"
+const a = rng.nextPrecision(5)
+
+//True
+typeof a === "string"
+
+//True
+a.length === 2+5
+```
+
+> `nextValuePrecision(precision:number,offset=0) : number`
+>
+> - `precision` The precision (number of decimals places) of the next generated value.
+> - `offset` A number that can be given to offset this generated value. Defaults to zero if undefined
+> - Returns a number in range of [ 0 ,1 ). Will have a length less than or equal to 2 + `precision`. It can be less as trailing zeros will be ignored. EX 0.ABC .
+
+```
+import {RandomProbability} from "@shane-butt/randomts"
+
+const rng = new RandomProbability()
+
+// a is like 0.ABCDE
+const a = rng.nextValuePrecision(5)
+
+//True
+typeof a === "number"
+
+//True. Can be less if trailing zeros Ex 0.12300 === 0.123.
+`${a}`.length <= 2+5
+```
+
+Reset the generator
+
+> `reset()`
+>
+> - Resets the generator to initial state
+
+```
+import {RandomProbability} from "@shane-butt/randomts"
+
+const rng = new RandomProbability()
+
+const a = rng.next()
+
+rng.reset()
+
+const b = rng.next()
+
+//True
+a === b
+```
